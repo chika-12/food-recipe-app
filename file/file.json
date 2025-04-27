@@ -1,0 +1,192 @@
+[
+  {
+    "title": "Spaghetti Bolognese",
+    "description": "A classic Italian pasta dish with rich, meaty sauce.",
+    "ingredients": [
+      "Spaghetti",
+      "Ground beef",
+      "Tomato sauce",
+      "Onion",
+      "Garlic",
+      "Olive oil",
+      "Salt",
+      "Pepper"
+    ],
+    "instructions": [
+      "Cook spaghetti according to package instructions.",
+      "Heat oil and sauté onion and garlic.",
+      "Add beef and cook until browned.",
+      "Stir in tomato sauce and simmer for 20 minutes.",
+      "Serve sauce over spaghetti."
+    ],
+    "cookingTime": 45,
+    "servings": 4,
+    "image": "https://example.com/images/spaghetti.jpg"
+  },
+  {
+    "title": "Chicken Fried Rice",
+    "description": "Quick and easy fried rice with chicken and vegetables.",
+    "ingredients": [
+      "Cooked rice",
+      "Chicken breast",
+      "Carrot",
+      "Peas",
+      "Eggs",
+      "Soy sauce",
+      "Sesame oil",
+      "Green onions"
+    ],
+    "instructions": [
+      "Scramble eggs and set aside.",
+      "Sauté chicken until cooked.",
+      "Add vegetables and cook until tender.",
+      "Add rice, eggs, and soy sauce; stir well.",
+      "Garnish with green onions."
+    ],
+    "cookingTime": 30,
+    "servings": 3,
+    "image": "https://example.com/images/fried-rice.jpg"
+  },
+  {
+    "title": "Beef Tacos",
+    "description": "Delicious ground beef tacos with fresh toppings.",
+    "ingredients": [
+      "Ground beef",
+      "Taco seasoning",
+      "Taco shells",
+      "Lettuce",
+      "Tomato",
+      "Cheddar cheese",
+      "Sour cream"
+    ],
+    "instructions": [
+      "Cook ground beef with taco seasoning.",
+      "Fill taco shells with beef.",
+      "Top with lettuce, tomato, cheese, and sour cream."
+    ],
+    "cookingTime": 25,
+    "servings": 4,
+    "image": "https://example.com/images/tacos.jpg"
+  },
+  {
+    "title": "Pancakes",
+    "description": "Fluffy homemade pancakes perfect for breakfast.",
+    "ingredients": [
+      "Flour",
+      "Baking powder",
+      "Sugar",
+      "Salt",
+      "Milk",
+      "Egg",
+      "Butter",
+      "Vanilla extract"
+    ],
+    "instructions": [
+      "Mix dry ingredients together.",
+      "Whisk wet ingredients separately.",
+      "Combine wet and dry ingredients.",
+      "Cook on a griddle until bubbles form and edges are dry."
+    ],
+    "cookingTime": 20,
+    "servings": 4,
+    "image": "https://example.com/images/pancakes.jpg"
+  },
+  {
+    "title": "Caesar Salad",
+    "description": "Crisp romaine tossed with Caesar dressing and croutons.",
+    "ingredients": [
+      "Romaine lettuce",
+      "Caesar dressing",
+      "Croutons",
+      "Parmesan cheese",
+      "Lemon juice"
+    ],
+    "instructions": [
+      "Toss lettuce with dressing.",
+      "Add croutons and parmesan cheese.",
+      "Squeeze lemon juice on top and serve."
+    ],
+    "cookingTime": 15,
+    "servings": 2,
+    "image": "https://example.com/images/caesar-salad.jpg"
+  },
+  {
+    "title": "Grilled Cheese Sandwich",
+    "description": "Classic grilled cheese sandwich with melted cheddar.",
+    "ingredients": ["Bread slices", "Butter", "Cheddar cheese slices"],
+    "instructions": [
+      "Butter the outside of each bread slice.",
+      "Place cheese between bread slices.",
+      "Grill on pan until golden brown and cheese is melted."
+    ],
+    "cookingTime": 10,
+    "servings": 1,
+    "image": "https://example.com/images/grilled-cheese.jpg"
+  },
+  {
+    "title": "Tomato Soup",
+    "description": "Smooth and creamy homemade tomato soup.",
+    "ingredients": [
+      "Tomatoes",
+      "Onion",
+      "Garlic",
+      "Vegetable broth",
+      "Cream",
+      "Salt",
+      "Pepper"
+    ],
+    "instructions": [
+      "Sauté onion and garlic.",
+      "Add tomatoes and broth.",
+      "Simmer for 20 minutes.",
+      "Blend until smooth, add cream, and season."
+    ],
+    "cookingTime": 40,
+    "servings": 4,
+    "image": "https://example.com/images/tomato-soup.jpg"
+  },
+  {
+    "title": "Banana Bread",
+    "description": "Moist and sweet banana bread with a hint of cinnamon.",
+    "ingredients": [
+      "Bananas",
+      "Flour",
+      "Sugar",
+      "Eggs",
+      "Baking soda",
+      "Butter",
+      "Cinnamon"
+    ],
+    "instructions": [
+      "Mash bananas and mix with melted butter.",
+      "Add sugar, egg, and vanilla.",
+      "Mix dry ingredients and combine with banana mixture.",
+      "Pour into loaf pan and bake at 350°F for 50-60 minutes."
+    ],
+    "cookingTime": 60,
+    "servings": 8,
+    "image": "https://example.com/images/banana-bread.jpg"
+  },
+  {
+    "title": "Omelette",
+    "description": "Easy, fluffy omelette with your choice of fillings.",
+    "ingredients": [
+      "Eggs",
+      "Milk",
+      "Salt",
+      "Pepper",
+      "Butter",
+      "Cheese",
+      "Vegetables (optional)"
+    ],
+    "instructions": [
+      "Beat eggs with milk, salt, and pepper.",
+      "Melt butter in a pan.",
+      "Pour egg mixture and cook until almost set.",
+      "Add cheese and veggies, fold, and finish cooking."
+    ],
+    "cookingTime": 10,
+    "servings": 1,
+    "image": "https://example.com/images/omelette.jpg"
+  }
+]

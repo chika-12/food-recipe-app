@@ -1,0 +1,20 @@
+{
+  "name": "food-recipe-app",
+  "version": "1.0.0",
+  "description": "This project is FeastOn food recipe sharing",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "SET NODE_ENV=production&& nodemon server.js",
+    "start_dev": "SET NODE_ENV=development&& nodemon server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "mongoose": "^8.14.0"
+  }
+}
