@@ -18,7 +18,7 @@ app.use((req, res, next) => {
 app.use(express.static(`${__dirname}/public`));
 
 app.use('/api/v1/recipes', recipeRoute);
-app.use('api/v1/users', userRoute);
+app.use('/api/v1/users', userRoute);
 
 app.all('/{*any}', (req, res, next) => {
   console.log('Unhadled Url', req.originalUrl);
