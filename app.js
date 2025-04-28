@@ -1,6 +1,8 @@
 const express = require('express');
 const recipeRoute = require('./routes/recipeRoutes');
 const cors = require('cors');
+const AppError = require('./utils/appError');
+const errorController = require('./controllers/errorControllers');
 
 const app = express();
 
@@ -16,4 +18,9 @@ app.use(express.static(`${__dirname}/public`));
 
 app.use('/api/v1/recipes', recipeRoute);
 
+app.all('/{*any}', (req, res, next) => {
+  console.log('Unhadled Url', req.originalUrl);
+  next(new AppError(`Cant find ${req.originalUrl} on this server`, 404));
+});
+app.use(errorController);
 module.exports = app;
