@@ -1,9 +1,9 @@
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
-const User = require('../models/userModels');
+const RecipeUser = require('../models/userModels');
 
 exports.getallusers = catchAsync(async (req, res, next) => {
-  const user = await User.find();
+  const user = await RecipeUser.find();
 
   if (!user) {
     return next(new AppError('No user found', 404));
