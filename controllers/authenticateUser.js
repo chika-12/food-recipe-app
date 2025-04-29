@@ -42,3 +42,38 @@ exports.login = catchAsync(async (req, res, next) => {
     token,
   });
 });
+
+exports.protect = catchAsync(async (req, res, next) => {
+  let token;
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith('Bearer')
+  ) {
+    token = req.headers.authorization.split(' ')[1];
+  }
+  if (!token) {
+    return next(new AppError('You are not logged in', 401));
+  }
+
+  const decoded = await new Promise((resolve, reject) => {
+    jwt.verify(token, process.env.JWT_SECRETS, (err, decoded) => {
+      if (err) {
+        const message =
+          err.name === 'TokenExpiredError'
+            ? 'Your token has expired please log in again'
+            : 'Invalid token';
+        return next(reject(new AppError(message, 401)));
+      }
+      resolve(decoded);
+    });
+  });
+
+  const freshUser = await RecipeUser.findById(decoded.id);
+
+  if (!freshUser) {
+    return next(new AppError('User not found', 401));
+  }
+
+  req.user = freshUser;
+  next();
+});

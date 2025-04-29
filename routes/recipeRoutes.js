@@ -1,10 +1,13 @@
 const express = require('express');
 const recipeRoute = express.Router();
 const recipeControllers = require('../controllers/recipeControllers');
+const authenticate = require('../controllers/authenticateUser');
 
-recipeRoute.route('/search').get(recipeControllers.getAllRecipe);
+recipeRoute
+  .route('/search')
+  .get(authenticate.protect, recipeControllers.getAllRecipe);
 recipeRoute.route('/meal').get(recipeControllers.getSpecificMeal);
-recipeRoute.route('/').post(recipeControllers.postRecipe);
+recipeRoute.route('/').post(authenticate.protect, recipeControllers.postRecipe);
 
 recipeRoute
   .route('/:recipeId')
