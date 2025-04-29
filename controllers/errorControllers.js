@@ -5,7 +5,11 @@ const castErrorHandler = (err) => {
   const message = `Invalid ${err.path}:${err.value}`;
   return new AppError(message, 400);
 };
+const validationErrorHandler = (err) => {
+  const message = err.message;
 
+  return new AppError(message, 401);
+};
 const productionError = (error, res) => {
   if (error.isOperational) {
     res.status(error.statusCode).json({
@@ -40,6 +44,9 @@ const errorController = (err, req, res, next) => {
 
   if (err.name === 'CastError') {
     error = castErrorHandler(error);
+  }
+  if (err.name == 'ValidationError') {
+    error = validationErrorHandler(error);
   }
   if (process.env.NODE_ENV === 'production') {
     productionError(error, res);

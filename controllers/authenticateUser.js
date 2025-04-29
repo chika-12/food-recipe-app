@@ -73,7 +73,7 @@ exports.protect = catchAsync(async (req, res, next) => {
   if (!freshUser) {
     return next(new AppError('User not found', 401));
   }
-
+  //Password Change detector not done yet
   req.user = freshUser;
   next();
 });
