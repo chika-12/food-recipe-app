@@ -18,6 +18,7 @@ userRoute.post(
 //forgotpassword route
 
 userRoute.post('/forgotpassword', authenticate.forgotPassword);
+userRoute.post('/resetpassword/:token', authenticate.resetPassword);
 
 userRoute
   .route('/')

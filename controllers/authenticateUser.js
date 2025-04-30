@@ -3,6 +3,7 @@ const catchAsync = require('../utils/catchAsync');
 const RecipeUser = require('../models/userModels');
 const jwt = require('jsonwebtoken');
 const sendEmail = require('../utils/emailServices');
+const crypto = require('crypto');
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRETS, {
@@ -158,4 +159,31 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 
     return next(new AppError('Error Sending Email', 500));
   }
+});
+exports.resetPassword = catchAsync(async (req, res, next) => {
+  const resetToken = crypto
+    .createHash('sha256')
+    .update(req.params.token)
+    .digest('hex');
+
+  const user = await RecipeUser.findOne({
+    passwordResetToken: resetToken,
+    passwordResetTokenExpires: { $gt: Date.now() },
+  });
+
+  if (!user) {
+    return next(new AppError('Invalid token or token has expired'));
+  }
+  (user.password = req.body.password),
+    (user.confirmPassword = req.body.confirmPassword);
+  (user.passwordResetToken = undefined),
+    (user.passwordResetTokenExpires = undefined);
+  await user.save();
+
+  const token = generateToken(user.id);
+
+  res.status(200).json({
+    Status: 'Success',
+    token,
+  });
 });
