@@ -6,9 +6,26 @@ const userRoute = express.Router();
 
 userRoute.post('/signup', authenticate.signUp);
 userRoute.post('/login', authenticate.login);
+
+//geting user profile
+userRoute.get('/profile', authenticate.protect, authenticate.getUserProfile);
+//update user profile
+userRoute.post(
+  '/profileupdate',
+  authenticate.protect,
+  authenticate.updateProfile
+);
+//forgotpassword route
+
+userRoute.post('/forgotpassword', authenticate.forgotPassword);
+
 userRoute
   .route('/')
-  .get(userControllers.getallusers)
+  .get(
+    authenticate.protect,
+    authenticate.restrictTo('admin', 'dev'),
+    userControllers.getallusers
+  )
   .post(userControllers.postUser);
 
 userRoute

@@ -2,11 +2,20 @@ const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 const RecipeUser = require('../models/userModels');
 const jwt = require('jsonwebtoken');
+const sendEmail = require('../utils/emailServices');
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRETS, {
     expiresIn: process.env.JWT_EXPIRES,
   });
+};
+
+const filteredObject = (obj, ...allowedFields) => {
+  const filltered = {};
+  Object.keys(obj).forEach((key) => {
+    if (allowedFields.includes(key)) filltered[key] = obj[key];
+  });
+  return filltered;
 };
 
 exports.signUp = catchAsync(async (req, res, next) => {
@@ -76,4 +85,77 @@ exports.protect = catchAsync(async (req, res, next) => {
   //Password Change detector not done yet
   req.user = freshUser;
   next();
+});
+
+exports.restrictTo = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.roles)) {
+      return next(new AppError('Unathorised Action', 403));
+    }
+    next();
+  };
+};
+
+exports.getUserProfile = catchAsync(async (req, res, next) => {
+  const profile = await RecipeUser.findById(req.user.id);
+  if (!profile) {
+    return next(new AppError('This user does not exist', 404));
+  }
+
+  res.status(200).json({
+    Status: 'Success',
+    profile,
+  });
+});
+
+exports.updateProfile = catchAsync(async (req, res, next) => {
+  const filtered = filteredObject(req.body, 'name', 'bio');
+  const user = await RecipeUser.findByIdAndUpdate(req.user.id, filtered, {
+    new: true,
+    runValidators: true,
+  });
+  if (!user) {
+    return next(new AppError('User not found', 404));
+  }
+
+  const token = generateToken(user._id);
+  res.status(200).json({
+    Status: 'Success',
+    user,
+    token,
+  });
+});
+
+exports.forgotPassword = catchAsync(async (req, res, next) => {
+  const user = await RecipeUser.findOne({ email: req.body.email });
+
+  if (!user) {
+    return next(new AppError('User not found', 401));
+  }
+
+  const resetToken = await user.createPasswordToken();
+  user.save({ validateBeforeSave: false });
+
+  const requestUrl = `${req.protocol}://${req.get(
+    'host'
+  )}/api/v1/users/resetpassword/${resetToken}`;
+
+  const message = `For password reset click link below ${requestUrl}`;
+  try {
+    sendEmail({
+      email: user.email,
+      subject: 'Your password expires in 10 minutes',
+      message,
+    });
+    res.status(200).json({
+      status: 'Success',
+      message: 'Token sent to email',
+    });
+  } catch (err) {
+    user.passwordResetToken = undefined;
+    user.passwordResetTokenExpires = undefined;
+    user.save({ validateBeforeSave: false });
+
+    return next(new AppError('Error Sending Email', 500));
+  }
 });

@@ -44,6 +44,9 @@ const userSchema = mongoose.Schema({
     type: Date,
     default: Date.now(),
   },
+  passwordChangedAt: Date,
+  passwordResetToken: String,
+  passwordResetTokenExpires: Date,
 });
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) {
@@ -56,6 +59,19 @@ userSchema.pre('save', async function (next) {
 
 userSchema.methods.correctPassword = async function (entered) {
   return await bcrypt.compare(entered, this.password);
+};
+
+userSchema.methods.createPasswordToken = async function () {
+  const resetToken = crypto.randomBytes(32).toString('hex');
+
+  this.passwordResetToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex');
+
+  console.log({ resetToken }, this.passwordResetToken);
+  this.passwordResetTokenExpires = Date.now() + 10 * 60 * 1000;
+  return resetToken;
 };
 
 const RecipeUser = mongoose.model('RecipeUser', userSchema);
