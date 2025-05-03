@@ -21,6 +21,14 @@ exports.postUser = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.deleteMe = catchAsync(async (req, res, next) => {
+  await RecipeUser.findByIdAndUpdate(req.user.id, { active: false });
+  res.status(204).json({
+    status: 'Success',
+    data: null,
+  });
+});
+
 exports.deleteUserById = catchAsync(async (req, res, next) => {
   res.status(503).json({
     status: 'Service Unavailable',

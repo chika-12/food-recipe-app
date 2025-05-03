@@ -1,6 +1,9 @@
 const mongoose = require('mongoose');
+const RecipeUser = require('./userModels');
 
 const recipeSchema = new mongoose.Schema({
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'RecipeUser' },
+  userName: { type: mongoose.Schema.Types.ObjectId, ref: 'RecipeUser' },
   title: {
     type: String,
     required: [true, 'A recipe must have a title'],
@@ -36,6 +39,28 @@ const recipeSchema = new mongoose.Schema({
     type: Date,
     default: Date.now(),
   },
+  ratings: [
+    {
+      userId: { type: mongoose.Schema.Types.ObjectId, ref: 'RecipeUser' },
+      value: Number,
+    },
+  ],
+
+  comment: [
+    {
+      userId: { type: mongoose.Schema.Types.ObjectId, ref: 'RecipeUser' },
+      content: String,
+      createdAt: Date,
+    },
+  ],
+  savedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  shares: [
+    {
+      userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+      platform: String,
+      sharedAt: Date,
+    },
+  ],
 });
 
 const Recipe = mongoose.model('Recipe', recipeSchema);

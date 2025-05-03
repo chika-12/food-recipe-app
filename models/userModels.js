@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
+const Recipe = require('./recipeModels');
 
 const userSchema = mongoose.Schema({
   name: {
@@ -47,6 +48,13 @@ const userSchema = mongoose.Schema({
   passwordChangedAt: Date,
   passwordResetToken: String,
   passwordResetTokenExpires: Date,
+  active: {
+    type: Boolean,
+    default: true,
+    select: false,
+  },
+
+  favouriteRecipe: { type: mongoose.Schema.Types.ObjectId, ref: 'Recipe' },
 });
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) {
@@ -59,6 +67,22 @@ userSchema.pre('save', async function (next) {
 
 userSchema.methods.correctPassword = async function (entered) {
   return await bcrypt.compare(entered, this.password);
+};
+userSchema.pre(/^find/, function (next) {
+  this.find({ active: { $ne: false } });
+  next();
+});
+
+userSchema.methods.passwordChanged = function (JWTTimestamp) {
+  if (this.passwordChangedAt) {
+    const changeTimeStamp = parseInt(
+      this.passwordChangedAt.getTime() / 1000,
+      10
+    );
+    console.log(this.passwordChangedAt, JWTTimesstamp);
+    return JWTTimesstamp < changeTimeStamp;
+  }
+  return false;
 };
 
 userSchema.methods.createPasswordToken = async function () {

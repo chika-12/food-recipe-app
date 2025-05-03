@@ -15,10 +15,12 @@ userRoute.post(
   authenticate.protect,
   authenticate.updateProfile
 );
+
 //forgotpassword route
 
 userRoute.post('/forgotpassword', authenticate.forgotPassword);
 userRoute.post('/resetpassword/:token', authenticate.resetPassword);
+userRoute.delete('/deleteme', authenticate.protect, userControllers.deleteMe);
 
 userRoute
   .route('/')

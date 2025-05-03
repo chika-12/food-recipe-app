@@ -19,19 +19,33 @@ const filteredObject = (obj, ...allowedFields) => {
   return filltered;
 };
 
+const statusResponseHandler = (user, statusCode, res) => {
+  const token = generateToken(user.id);
+  const cookieOptions = {
+    expires: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRES * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true,
+  };
+  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
+  res.cookie('jwt', token, cookieOptions);
+  user.password = undefined;
+  res.status(200).json({
+    Status: 'Success',
+    data: {
+      user,
+    },
+    token,
+  });
+};
+
 exports.signUp = catchAsync(async (req, res, next) => {
   const user = await RecipeUser.create(req.body);
   if (!user) {
     return next(new AppError('No user created', 400));
   }
 
-  const token = generateToken(user._id);
-
-  res.status(200).json({
-    Status: 'Success',
-    user,
-    token,
-  });
+  statusResponseHandler(user, 200, res);
 });
 
 exports.login = catchAsync(async (req, res, next) => {
@@ -45,12 +59,7 @@ exports.login = catchAsync(async (req, res, next) => {
   if (!user || !(await user.correctPassword(password))) {
     return next(new AppError('Wrong Email or Passwor', 401));
   }
-  const token = generateToken(user._id);
-
-  res.status(200).json({
-    status: 'Success',
-    token,
-  });
+  statusResponseHandler(user, 200, res);
 });
 
 exports.protect = catchAsync(async (req, res, next) => {
@@ -84,6 +93,9 @@ exports.protect = catchAsync(async (req, res, next) => {
     return next(new AppError('User not found', 401));
   }
   //Password Change detector not done yet
+  if (freshUser.passwordChange(decoded.iat)) {
+    return next(new AppError('Password Change detected. Log in again', 401));
+  }
   req.user = freshUser;
   next();
 });
@@ -119,12 +131,7 @@ exports.updateProfile = catchAsync(async (req, res, next) => {
     return next(new AppError('User not found', 404));
   }
 
-  const token = generateToken(user._id);
-  res.status(200).json({
-    Status: 'Success',
-    user,
-    token,
-  });
+  statusResponseHandler(user, 200, res);
 });
 
 exports.forgotPassword = catchAsync(async (req, res, next) => {
@@ -160,6 +167,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
     return next(new AppError('Error Sending Email', 500));
   }
 });
+
 exports.resetPassword = catchAsync(async (req, res, next) => {
   const resetToken = crypto
     .createHash('sha256')
@@ -180,10 +188,5 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
     (user.passwordResetTokenExpires = undefined);
   await user.save();
 
-  const token = generateToken(user.id);
-
-  res.status(200).json({
-    Status: 'Success',
-    token,
-  });
+  statusResponseHandler(user, 200, res);
 });
