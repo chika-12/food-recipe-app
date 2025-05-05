@@ -2,6 +2,9 @@ const express = require('express');
 const recipeRoute = express.Router();
 const recipeControllers = require('../controllers/recipeControllers');
 const authenticate = require('../controllers/authenticateUser');
+const reviewRoute = require('../routes/reviewRoute');
+
+recipeRoute.use('/:recipeId/review', reviewRoute);
 
 recipeRoute
   .route('/search')

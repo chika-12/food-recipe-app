@@ -10,6 +10,15 @@ const validationErrorHandler = (err) => {
 
   return new AppError(message, 401);
 };
+const mongoServerError = (err) => {
+  let message = 'Error from data base';
+  if (err.code === 11000) {
+    const field = Object.keys(err.keyValue)[0];
+    const value = err.keyValue[field];
+    message = `The ${field} '${value}' is already in use. Please use a different one.`;
+  }
+  return new AppError(message, 401);
+};
 const productionError = (error, res) => {
   if (error.isOperational) {
     res.status(error.statusCode).json({
@@ -47,6 +56,9 @@ const errorController = (err, req, res, next) => {
   }
   if (err.name == 'ValidationError') {
     error = validationErrorHandler(error);
+  }
+  if (err.name === 'MongoServerError') {
+    error = mongoServerError(error);
   }
   if (process.env.NODE_ENV === 'production') {
     productionError(error, res);

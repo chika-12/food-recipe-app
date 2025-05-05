@@ -10,6 +10,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 const hpp = require('hpp');
 const rateLimit = require('express-rate-limit');
 const { xss } = require('express-xss-sanitizer');
+const reviewRoute = require('./routes/reviewRoute');
 
 //Http loging
 app.use(helmet());
@@ -48,6 +49,7 @@ app.use('/api', limit);
 //Routers
 app.use('/api/v1/recipes', recipeRoute);
 app.use('/api/v1/users', userRoute);
+app.use('/api/v1/review', reviewRoute);
 
 //Unhandled Url
 app.all('/{*any}', (req, res, next) => {
