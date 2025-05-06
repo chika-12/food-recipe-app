@@ -1,11 +1,14 @@
 const express = require('express');
 const userControllers = require('../controllers/userControllers');
 const authenticate = require('../controllers/authenticateUser');
+const favouriteRoute = require('../routes/favouriteRoute');
 
 const userRoute = express.Router();
 
 userRoute.post('/signup', authenticate.signUp);
 userRoute.post('/login', authenticate.login);
+
+userRoute.use('/:userId/favourite', favouriteRoute);
 
 //geting user profile
 userRoute.get('/profile', authenticate.protect, authenticate.getUserProfile);

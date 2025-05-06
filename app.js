@@ -11,6 +11,7 @@ const hpp = require('hpp');
 const rateLimit = require('express-rate-limit');
 const { xss } = require('express-xss-sanitizer');
 const reviewRoute = require('./routes/reviewRoute');
+const favouriteRoute = require('./routes/favouriteRoute');
 
 //Http loging
 app.use(helmet());
@@ -50,7 +51,7 @@ app.use('/api', limit);
 app.use('/api/v1/recipes', recipeRoute);
 app.use('/api/v1/users', userRoute);
 app.use('/api/v1/review', reviewRoute);
-
+app.use('/api/v1/favourite', favouriteRoute);
 //Unhandled Url
 app.all('/{*any}', (req, res, next) => {
   console.log('Unhadled Url', req.originalUrl);

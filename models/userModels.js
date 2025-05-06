@@ -3,59 +3,63 @@ const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const Recipe = require('./recipeModels');
 
-const userSchema = mongoose.Schema({
-  name: {
-    type: String,
-    required: [true, 'Input your name'],
-    trim: true,
-  },
-  email: {
-    type: String,
-    required: [true, 'Email Required'],
-    trim: true,
-    unique: true,
-  },
-  roles: {
-    type: String,
-    enum: ['user', 'admin', 'dev'],
-    default: 'user',
-  },
-  password: {
-    type: String,
-    required: true,
-    minlength: [8, 'password must be at leat 8 characters'],
-    maxlength: [278, 'password should not be greater than 278 characters'],
-    select: false,
-  },
-  confirmPassword: {
-    type: String,
-    required: [true, 'confirm your password'],
-    validate: {
-      validator: function (el) {
-        return el === this.password;
+const userSchema = mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: [true, 'Input your name'],
+      trim: true,
+    },
+    email: {
+      type: String,
+      required: [true, 'Email Required'],
+      trim: true,
+      unique: true,
+    },
+    roles: {
+      type: String,
+      enum: ['user', 'admin', 'dev'],
+      default: 'user',
+    },
+    password: {
+      type: String,
+      required: true,
+      minlength: [8, 'password must be at leat 8 characters'],
+      maxlength: [278, 'password should not be greater than 278 characters'],
+      select: false,
+    },
+    confirmPassword: {
+      type: String,
+      required: [true, 'confirm your password'],
+      validate: {
+        validator: function (el) {
+          return el === this.password;
+        },
+        message: 'Password do not match',
       },
-      message: 'Password do not match',
+    },
+    avataUrl: {
+      type: String,
+    },
+    bio: String,
+    createdAt: {
+      type: Date,
+      default: Date.now(),
+    },
+    passwordChangedAt: Date,
+    passwordResetToken: String,
+    passwordResetTokenExpires: Date,
+    active: {
+      type: Boolean,
+      default: true,
+      select: false,
     },
   },
-  avataUrl: {
-    type: String,
-  },
-  bio: String,
-  createdAt: {
-    type: Date,
-    default: Date.now(),
-  },
-  passwordChangedAt: Date,
-  passwordResetToken: String,
-  passwordResetTokenExpires: Date,
-  active: {
-    type: Boolean,
-    default: true,
-    select: false,
-  },
-
-  favouriteRecipe: { type: mongoose.Schema.Types.ObjectId, ref: 'Recipe' },
-});
+  {
+    toObject: { virtuals: true },
+    toJSON: { virtuals: true },
+  }
+);
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) {
     return next();
@@ -97,6 +101,12 @@ userSchema.methods.createPasswordToken = async function () {
   this.passwordResetTokenExpires = Date.now() + 10 * 60 * 1000;
   return resetToken;
 };
+
+userSchema.virtual('favourite', {
+  ref: 'FavoriteRecipe',
+  foreignField: 'user',
+  localField: '_id',
+});
 
 const RecipeUser = mongoose.model('RecipeUser', userSchema);
 module.exports = RecipeUser;
