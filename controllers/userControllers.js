@@ -44,8 +44,12 @@ exports.patchUserById = catchAsync(async (req, res, next) => {
 });
 
 exports.getUserById = catchAsync(async (req, res, next) => {
-  res.status(503).json({
-    status: 'Service Unavailable',
-    message: 'Work in progress',
+  const specificUser = await RecipeUser.findById(req.params.userId).populate();
+  if (!specificUser) {
+    return next(new AppError('No user found', 404));
+  }
+  res.status(200).json({
+    status: 'Success',
+    specificUser,
   });
 });
