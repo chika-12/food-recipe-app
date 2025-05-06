@@ -4,7 +4,7 @@ const catchAsync = require('../utils/catchAsync');
 
 exports.addToFavourite = catchAsync(async (req, res, next) => {
   if (!req.body.user) req.body.user = req.user.id;
-  if (!req.body.FavoriteRecipe) req.body.FavoriteRecipe = req.params.userId;
+  //if (!req.body.FavoriteRecipe) req.body.FavoriteRecipe = req.params.userId;
 
   const addFavourite = await FavoriteRecipe.create(req.body);
   if (!addFavourite) {
