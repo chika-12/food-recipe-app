@@ -44,7 +44,9 @@ exports.patchUserById = catchAsync(async (req, res, next) => {
 });
 
 exports.getUserById = catchAsync(async (req, res, next) => {
-  const specificUser = await RecipeUser.findById(req.params.userId).populate();
+  const specificUser = await RecipeUser.findById(req.params.userId).populate(
+    'favourite'
+  );
   if (!specificUser) {
     return next(new AppError('No user found', 404));
   }
