@@ -17,5 +17,8 @@ const favouriteRecipeSchema = new mongoose.Schema({
   ],
 });
 
-const FavouritRecipe = mongoose.model('FavouriteRecipe', favouriteRecipeSchema);
-module.exports = FavouritRecipe;
+const FavouriteRecipe = mongoose.model(
+  'FavouriteRecipe',
+  favouriteRecipeSchema
+);
+module.exports = FavouriteRecipe;
