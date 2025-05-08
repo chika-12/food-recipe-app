@@ -41,6 +41,11 @@ document.addEventListener('DOMContentLoaded', async () => {
               <div class="meta">Cooking Time: ${
                 recipe.cookingTime
               } mins | Serves: ${recipe.servings}</div>
+              <button class="view-recipe-button" onclick="window.location.href='recipe-detail.html?id=${
+                recipe.id
+              }'">
+            View Recipe
+          </button>
             </div>
           </div>
         `

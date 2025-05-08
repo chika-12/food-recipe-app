@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Recipe Detail</title>
+    <link rel="stylesheet" href="css/recipe-details.css" />
+  </head>
+  <body>
+    <header>
+      <h1 id="detail-title">Recipe Details</h1>
+      <nav>
+        <button onclick="window.location.href='recipes.html'">
+          ← Back to All Recipes
+        </button>
+      </nav>
+    </header>
+
+    <main>
+      <section id="recipe-detail">
+        <!-- Populated by recipe-detail.js -->
+      </section>
+
+      <section id="comments-section">
+        <h2>Comments</h2>
+        <div id="comments-container">
+          <!-- Existing comments will load here -->
+        </div>
+        <form id="comment-form">
+          <textarea
+            id="comment-text"
+            placeholder="Write your comment..."
+            required
+          ></textarea>
+          <input
+            type="number"
+            id="comment-rating"
+            min="1"
+            max="5"
+            placeholder="Rating (1–5)"
+            required
+          />
+          <button type="submit">Submit Comment</button>
+        </form>
+      </section>
+    </main>
+
+    <script src="js/recipe-details.js"></script>
+  </body>
+</html>
