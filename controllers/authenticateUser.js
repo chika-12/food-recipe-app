@@ -57,7 +57,7 @@ exports.login = catchAsync(async (req, res, next) => {
   const user = await RecipeUser.findOne({ email }).select('+password');
 
   if (!user || !(await user.correctPassword(password))) {
-    return next(new AppError('Wrong Email or Passwor', 401));
+    return next(new AppError('Wrong Email or Password', 401));
   }
   statusResponseHandler(user, 200, res);
 });
@@ -110,7 +110,7 @@ exports.restrictTo = (...roles) => {
 };
 
 exports.getUserProfile = catchAsync(async (req, res, next) => {
-  const profile = await RecipeUser.findById(req.user.id).populate('favourite');
+  const profile = await RecipeUser.findById(req.user.id);
   if (!profile) {
     return next(new AppError('This user does not exist', 404));
   }

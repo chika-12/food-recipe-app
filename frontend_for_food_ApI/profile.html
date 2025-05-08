@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User Profile</title>
+    <link rel="stylesheet" href="css/profile.css" />
+  </head>
+  <body>
+    <header>
+      <h1>User Profile</h1>
+      <nav>
+        <button onclick="window.location.href='add-recipe.html'">
+          Add Recipe
+        </button>
+      </nav>
+    </header>
+
+    <main>
+      <section class="profile-info">
+        <h2>Profile Information</h2>
+        <div id="user-details">
+          <!-- User details will be populated here -->
+        </div>
+        <button id="edit-profile">Edit Profile</button>
+      </section>
+
+      <section class="recipes">
+        <h2>Your Recipes</h2>
+        <div id="user-recipes">
+          <!-- User's recipes will be listed here -->
+        </div>
+      </section>
+
+      <section class="favorites">
+        <h2>Your Favorites</h2>
+        <div id="user-favorites">
+          <!-- Favorite recipes will be displayed here -->
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <button id="logout">Logout</button>
+    </footer>
+
+    <script src="js/profile.js"></script>
+  </body>
+</html>
