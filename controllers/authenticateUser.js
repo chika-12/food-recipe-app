@@ -110,7 +110,7 @@ exports.restrictTo = (...roles) => {
 };
 
 exports.getUserProfile = catchAsync(async (req, res, next) => {
-  const profile = await RecipeUser.findById(req.user.id);
+  const profile = await RecipeUser.findById(req.user.id).populate('favourite');
   if (!profile) {
     return next(new AppError('This user does not exist', 404));
   }
