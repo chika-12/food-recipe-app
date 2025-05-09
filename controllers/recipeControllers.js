@@ -29,7 +29,7 @@ exports.getRecipeById = catchAsync(async (req, res, next) => {
       path: 'comment',
       select: 'comment ratings -recipe',
     })
-    .populate({ path: user, select: 'name' });
+    .populate({ path: 'user', select: 'name' });
 
   if (!specificRecipe) {
     return next(new AppError('Recipe Not found', 404));
