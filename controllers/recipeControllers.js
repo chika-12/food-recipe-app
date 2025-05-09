@@ -24,10 +24,12 @@ exports.getAllRecipe = catchAsync(async (req, res, next) => {
 });
 
 exports.getRecipeById = catchAsync(async (req, res, next) => {
-  const specificRecipe = await Recipe.findById(req.params.recipeId).populate({
-    path: 'comment',
-    select: 'comment ratings user -recipe',
-  });
+  const specificRecipe = await Recipe.findById(req.params.recipeId)
+    .populate({
+      path: 'comment',
+      select: 'comment ratings -recipe',
+    })
+    .populate({ path: user, select: 'name' });
 
   if (!specificRecipe) {
     return next(new AppError('Recipe Not found', 404));
