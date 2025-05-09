@@ -11,5 +11,8 @@ favouriteRoute
     favouriteControllers.showAllFavouriteList
   )
   .post(authenticate.protect, favouriteControllers.addToFavourite);
+favouriteRoute
+  .route('/:favoriteId')
+  .delete(authenticate.protect, favouriteControllers.deleteFromFavorite);
 
 module.exports = favouriteRoute;

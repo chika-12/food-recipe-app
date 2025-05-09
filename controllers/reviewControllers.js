@@ -33,3 +33,27 @@ exports.createReviews = catchAsync(async (req, res, next) => {
     createdReview,
   });
 });
+exports.deleteReview = catchAsync(async (req, res, next) => {
+  await Reviews.findByIdAndDelete(req.params.reviewId);
+
+  res.status(204).json({
+    status: 'Success',
+    data: null,
+  });
+});
+
+exports.updateReviews = catchAsync(async (req, res, next) => {
+  const updatedData = await Reviews.findByIdAndUpdate(
+    req.params.reviewId,
+    req.body,
+    { new: true, runValidators: true, context: 'query' }
+  );
+
+  if (!updatedData) {
+    return next(new AppError('Data not updated', 500));
+  }
+  res.status(201).json({
+    Status: 'Success',
+    updatedData,
+  });
+});

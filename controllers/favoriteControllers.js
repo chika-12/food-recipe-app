@@ -21,10 +21,19 @@ exports.showAllFavouriteList = catchAsync(async (req, res, next) => {
   const allFavourite = await FavoriteRecipe.find();
 
   if (!allFavourite || allFavourite.length === 0) {
-    return next(new AppError('No list', 404));
+    return next(new AppError('No Favorite yet', 404));
   }
   res.status(200).json({
     Status: 'Success',
     allFavourite,
+  });
+});
+
+exports.deleteFromFavorite = catchAsync(async (req, res, next) => {
+  await FavoriteRecipe.findByIdAndDelete(req.params.favoriteId);
+
+  res.status(204).json({
+    Status: 'Success',
+    data: null,
   });
 });
