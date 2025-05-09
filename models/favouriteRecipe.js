@@ -17,5 +17,8 @@ const favouriteRecipeSchema = new mongoose.Schema({
   ],
 });
 
+favouriteRecipeSchema.pre(/^find/, function (next) {
+  this.populate({ path: 'favoriteRecipe' });
+});
 const FavoriteRecipe = mongoose.model('FavoriteRecipe', favouriteRecipeSchema);
 module.exports = FavoriteRecipe;
