@@ -112,7 +112,7 @@ exports.restrictTo = (...roles) => {
 exports.getUserProfile = catchAsync(async (req, res, next) => {
   const profile = await RecipeUser.findById(req.user.id)
     .populate({
-      path: 'favourite', // first populate the virtual on User
+      path: 'favorite', // first populate the virtual on User
       populate: {
         path: 'favoriteRecipe', // then populate the recipe field on FavoriteRecipe
         model: 'Recipe', // make sure this matches your Recipe model name
