@@ -103,10 +103,17 @@ userSchema.methods.createPasswordToken = async function () {
   return resetToken;
 };
 
+// userSchema.virtual('favorite', {
+//   ref: 'FavoriteRecipe',
+//   foreignField: 'favoriteRecipe',
+//   localField: '_id',
+// });
+
 userSchema.virtual('favorite', {
   ref: 'FavoriteRecipe',
-  foreignField: 'user',
+  foreignField: 'user', // ← match the **user** field in fav‑schema
   localField: '_id',
+  justOne: false, // you’ll get an array of FavoriteRecipe docs
 });
 
 const RecipeUser = mongoose.model('RecipeUser', userSchema);

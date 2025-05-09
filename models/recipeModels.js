@@ -1,9 +1,13 @@
 const mongoose = require('mongoose');
-const RecipeUser = require('./userModels');
-const ReviewUser = require('./reviewModels');
+require('./userModels');
+require('./reviewModels');
 
 const recipeSchema = new mongoose.Schema(
   {
+    user: {
+      type: mongoose.Schema.ObjectId,
+      ref: 'RecipeUser',
+    },
     title: {
       type: String,
       required: [true, 'A recipe must have a title'],
@@ -50,6 +54,10 @@ recipeSchema.virtual('comment', {
   ref: 'ReviewUser',
   foreignField: 'recipe',
   localField: '_id',
+});
+recipeSchema.pre(/^find/, function (next) {
+  this.populate({ path: 'user', select: 'name avatarUrl' });
+  next();
 });
 
 const Recipe = mongoose.model('Recipe', recipeSchema);

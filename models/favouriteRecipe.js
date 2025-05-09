@@ -1,10 +1,11 @@
 const mongoose = require('mongoose');
+require('./recipeModels');
 
 const favouriteRecipeSchema = new mongoose.Schema({
   favoriteRecipe: [
     {
       type: mongoose.Schema.ObjectId,
-      ref: 'RecipeUser',
+      ref: 'Recipe',
       required: [true, 'What is the favourite recipe'],
     },
   ],
@@ -17,8 +18,13 @@ const favouriteRecipeSchema = new mongoose.Schema({
   ],
 });
 
-favouriteRecipeSchema.pre(/^find/, function (next) {
-  this.populate({ path: 'favoriteRecipe' });
+favouriteRecipeSchema.pre('save', async function (next) {
+  await this.populate({ path: 'favoriteRecipe' });
+  await this.populate({
+    path: 'user',
+    select: 'name',
+  });
+  next();
 });
 const FavoriteRecipe = mongoose.model('FavoriteRecipe', favouriteRecipeSchema);
 module.exports = FavoriteRecipe;

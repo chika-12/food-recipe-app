@@ -51,9 +51,10 @@ app.use('/api', limit);
 app.use('/api/v1/recipes', recipeRoute);
 app.use('/api/v1/users', userRoute);
 app.use('/api/v1/review', reviewRoute);
-app.use('/api/v1/favourite', favouriteRoute);
+app.use('/api/v1/favorite', favouriteRoute);
 //Unhandled Url
-app.all('/{*any}', (req, res, next) => {
+
+app.all('*', (req, res, next) => {
   console.log('Unhadled Url', req.originalUrl);
   next(new AppError(`Cant find ${req.originalUrl} on this server`, 404));
 });

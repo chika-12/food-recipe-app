@@ -63,6 +63,7 @@ exports.getSpecificMeal = catchAsync(async (req, res, next) => {
 });
 
 exports.postRecipe = catchAsync(async (req, res, next) => {
+  req.body.user = req.user.id;
   const data = await Recipe.create(req.body);
 
   if (!data) {
