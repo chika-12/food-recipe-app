@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const Recipe = require('./recipeModels');
+require('./favouriteRecipe');
 
 const userSchema = mongoose.Schema(
   {

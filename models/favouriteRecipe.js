@@ -4,7 +4,7 @@ const favouriteRecipeSchema = new mongoose.Schema({
   favoriteRecipe: [
     {
       type: mongoose.Schema.ObjectId,
-      ref: 'Recipe',
+      ref: 'RecipeUser',
       required: [true, 'What is the favourite recipe'],
     },
   ],
