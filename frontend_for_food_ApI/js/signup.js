@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
     const confirmPassword = document.getElementById('confirmPassword').value;
-    const roles = document.getElementById('roles').value.trim();
     const bio = document.getElementById('bio').value.trim();
 
     // Construct the payload
@@ -17,7 +16,6 @@ document.addEventListener('DOMContentLoaded', () => {
       email,
       password,
       confirmPassword,
-      roles,
       bio,
     };
 
@@ -40,9 +38,10 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
+      localStorage.setItem('token', result.token);
       // Success
       alert('Signup successful!');
-      window.location.href = 'login.html'; // redirect to login
+      window.location.href = 'recipes.html'; // redirect to recipes page
     } catch (error) {
       console.error('Error signing up:', error);
       alert('An error occurred. Please try again.');
