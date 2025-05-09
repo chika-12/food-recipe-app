@@ -103,7 +103,7 @@ userSchema.methods.createPasswordToken = async function () {
   return resetToken;
 };
 
-userSchema.virtual('favourite', {
+userSchema.virtual('favorite', {
   ref: 'FavoriteRecipe',
   foreignField: 'user',
   localField: '_id',
