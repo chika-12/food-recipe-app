@@ -1,106 +1,23 @@
 //const { options } = require('../app');
 const Recipe = require('../models/recipeModels');
-const AppError = require('../utils/appError');
-const catchAsync = require('../utils/catchAsync');
-const ApiFeatures = require('../utils/feautures');
+const factory = require('./factoryFunction');
 
-exports.getAllRecipe = catchAsync(async (req, res, next) => {
-  const allRecipe = new ApiFeatures(Recipe.find(), req.query)
-    .filtering()
-    .sorting()
-    .limitFields()
-    .pagination();
+exports.getAllRecipe = factory.getall(Recipe);
 
-  const data = await allRecipe.query;
-  if (!data) {
-    return next(
-      new AppError('All recipe deleted or Internal server error', 500)
-    );
-  }
-  res.status(200).json({
-    count: data.length,
-    data,
-  });
-});
-
-exports.getRecipeById = catchAsync(async (req, res, next) => {
-  const specificRecipe = await Recipe.findById(req.params.recipeId).populate({
-    path: 'comment',
-    select: 'comment ratings -recipe',
-    populate: {
-      path: 'user',
-      select: 'name avatarUrl',
-    },
-  });
-
-  if (!specificRecipe) {
-    return next(new AppError('Recipe Not found', 404));
-  }
-
-  res.status(200).json({
-    status: 'Sucess',
-    specificRecipe,
-  });
+exports.getRecipeById = factory.getOneById(Recipe, {
+  path: 'comment',
+  select: 'comment ratings -recipe',
+  populate: {
+    path: 'user',
+    select: 'name avatarUrl',
+  },
 });
 
 //Not Working yet
-exports.getSpecificMeal = catchAsync(async (req, res, next) => {
-  const { title } = req.query;
-  if (!title) {
-    return next(new AppError('Title query is required', 400));
-  }
+exports.getSpecificMeal = factory.specifiMeal(Recipe);
 
-  const data = await Recipe.find({ title: title });
+exports.postRecipe = factory.createOne(Recipe);
 
-  console.log('Searching for title:', title);
-  if (!data || data.length === 0) {
-    return next(new AppError('No Data Found', 404));
-  }
-  res.status(200).json({
-    status: 'Success',
-    data,
-  });
-});
+exports.patchRecipe = factory.patchOne(Recipe);
 
-exports.postRecipe = catchAsync(async (req, res, next) => {
-  req.body.user = req.user.id;
-  const data = await Recipe.create(req.body);
-
-  if (!data) {
-    return next(new AppError('Data not posted', 400));
-  }
-
-  res.status(201).json({
-    status: 'Success',
-    data,
-  });
-});
-
-exports.patchRecipe = catchAsync(async (req, res, next) => {
-  const data = await Recipe.findByIdAndUpdate(req.params.recipeId, req.body, {
-    new: true,
-    runValidators: true,
-  });
-
-  if (!data) {
-    return next(new AppError('Data not found', 401));
-  }
-
-  res.status(200).json({
-    status: 'Success',
-    data,
-  });
-});
-
-exports.deleteRecipe = catchAsync(async (req, res, next) => {
-  await Recipe.findByIdAndDelete(req.params.recipeId);
-
-  if (Recipe.findById(req.params.recipeId)) {
-    return next(new AppError('Unable to delete data', 401));
-  }
-
-  res.status(204).json({
-    status: 'Success',
-    data: null,
-  });
-});
+exports.deleteRecipe = factory.deleteOne(Recipe);
