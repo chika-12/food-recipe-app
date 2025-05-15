@@ -28,7 +28,8 @@ document.addEventListener('DOMContentLoaded', () => {
       );
       if (!response.ok) throw new Error('Failed to fetch recipe details');
 
-      const { specificRecipe: recipe } = await response.json();
+      const result = await response.json();
+      const recipe = result.data; // Adjusted for new format
 
       // Set page title
       titleEl.textContent = recipe.title;
