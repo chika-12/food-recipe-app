@@ -122,6 +122,9 @@ exports.shareRecipe = (model) =>
     if (!sharedRecipeId) {
       return next(new AppError('Document not found', 404));
     }
+    if (user.id === receiver) {
+      return next(new AppError('You can not share to yourself', 403));
+    }
 
     const showRecipe = `${req.protocol}://${req.get(
       'host'
