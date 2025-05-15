@@ -1,4 +1,3 @@
-//const { options } = require('../app');
 const Recipe = require('../models/recipeModels');
 const factory = require('./factoryFunction');
 
@@ -21,3 +20,5 @@ exports.postRecipe = factory.createOne(Recipe);
 exports.patchRecipe = factory.patchOne(Recipe);
 
 exports.deleteRecipe = factory.deleteOne(Recipe);
+
+exports.shareRecipe = factory.shareRecipe(Recipe);

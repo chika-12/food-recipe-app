@@ -1,6 +1,7 @@
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 const ApiFeatures = require('../utils/feautures');
+const sendEmail = require('../utils/emailServices');
 
 exports.getall = (model) =>
   catchAsync(async (req, res, next) => {
@@ -14,9 +15,7 @@ exports.getall = (model) =>
 
     const data = await docs.query;
     if (!data) {
-      return next(
-        new AppError('All document deleted or Internal server error', 500)
-      );
+      return next(new AppError('Internal server error', 500));
     }
     res.status(200).json({
       count: data.length,
@@ -29,6 +28,11 @@ exports.createOne = (model) =>
     req.body.user = req.user.id;
     if (model === Reviews) {
       if (!req.body.recipe) req.body.recipe = req.params.recipeId;
+    }
+
+    if (model === FavoriteRecipe) {
+      if (!req.body.favoriteRecipe)
+        req.body.favoriteRecipe = req.params.recipeId;
     }
     const data = await model.create(req.body);
 
@@ -106,5 +110,31 @@ exports.deleteOne = (model) =>
     res.status(204).json({
       status: 'Success',
       data: null,
+    });
+  });
+
+exports.shareRecipe = (model) =>
+  catchAsync(async (req, res, next) => {
+    const receiver = model.findById(req.params.recipeId);
+    const user = req.user;
+    const sharedRecipe = req.body.recipeId;
+
+    if (!sharedRecipeId) {
+      return next(new AppError('Document not found', 404));
+    }
+
+    const showRecipe = `${req.protocol}://${req.get(
+      'host'
+    )}/api/v1/recipe/${sharedRecipe}`;
+    const message = `${user.name} shared a recipe with you click on the link to check it out ${showRecipe}`;
+
+    sendEmail({
+      email: `from ${user.email} to  ${receiver}`,
+      subject: 'Love to check out this recipe',
+      message,
+    });
+    res.status(200).json({
+      Status: 'Success',
+      message: 'Recipe Shared',
     });
   });

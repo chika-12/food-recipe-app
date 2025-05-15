@@ -14,6 +14,11 @@ recipeRoute
 recipeRoute.route('/meal').get(recipeControllers.getSpecificMeal);
 recipeRoute.route('/').post(authenticate.protect, recipeControllers.postRecipe);
 
+//share recipe
+recipeRoute
+  .route('/:userId')
+  .post(authenticate.protect, recipeControllers.shareRecipe);
+
 recipeRoute
   .route('/:recipeId')
   .get(recipeControllers.getRecipeById)

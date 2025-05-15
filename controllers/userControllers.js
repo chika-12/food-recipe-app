@@ -1,23 +1,14 @@
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 const RecipeUser = require('../models/userModels');
+const factory = require('./factoryFunction');
+const { populate } = require('../models/recipeModels');
 
-exports.getallusers = catchAsync(async (req, res, next) => {
-  const user = await RecipeUser.find();
-
-  if (!user) {
-    return next(new AppError('No user found', 404));
-  }
-  res.status(200).json({
-    status: 'Success',
-    user,
-  });
-});
-
+exports.getallusers = factory.getall(RecipeUser);
 exports.postUser = catchAsync(async (req, res, next) => {
   res.status(503).json({
-    status: 'maintainance',
-    message: 'Work in progress',
+    status: 'Unauthorized',
+    message: 'Unauthorized route please use signup',
   });
 });
 
@@ -29,29 +20,8 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.deleteUserById = catchAsync(async (req, res, next) => {
-  res.status(503).json({
-    status: 'Service Unavailable',
-    message: 'Work in progress',
-  });
-});
+exports.deleteUserById = factory.deleteOne(RecipeUser);
 
-exports.patchUserById = catchAsync(async (req, res, next) => {
-  res.status(503).json({
-    status: 'Service Unavailable',
-    message: 'Work in progress',
-  });
-});
+exports.patchUserById = factory.patchOne(RecipeUser);
 
-exports.getUserById = catchAsync(async (req, res, next) => {
-  const specificUser = await RecipeUser.findById(req.params.userId).populate(
-    'favourite'
-  );
-  if (!specificUser) {
-    return next(new AppError('No user found', 404));
-  }
-  res.status(200).json({
-    status: 'Success',
-    specificUser,
-  });
-});
+exports.getUserById = factory.getOneById(RecipeUser, { path: 'favorite' });
