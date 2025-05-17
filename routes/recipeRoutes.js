@@ -16,11 +16,11 @@ recipeRoute.route('/').post(authenticate.protect, recipeControllers.postRecipe);
 
 //share recipe
 recipeRoute
-  .route('/:userId')
+  .route('/:id/share')
   .post(authenticate.protect, recipeControllers.shareRecipe);
 
 recipeRoute
-  .route('/:recipeId')
+  .route('/:id')
   .get(recipeControllers.getRecipeById)
   .patch(recipeControllers.patchRecipe);
 module.exports = recipeRoute;

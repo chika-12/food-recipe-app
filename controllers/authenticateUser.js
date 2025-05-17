@@ -109,40 +109,6 @@ exports.restrictTo = (...roles) => {
   };
 };
 
-exports.getUserProfile = catchAsync(async (req, res, next) => {
-  const profile = await RecipeUser.findById(req.user.id)
-    .populate({
-      path: 'favorite', // first populate the virtual on User
-      populate: {
-        path: 'favoriteRecipe', // then populate the recipe field on FavoriteRecipe
-        model: 'Recipe', // make sure this matches your Recipe model name
-        select: 'title ingredients instructions imageUrl', // pick whatever fields you need
-      },
-    })
-    .exec();
-  if (!profile) {
-    return next(new AppError('This user does not exist', 404));
-  }
-
-  res.status(200).json({
-    Status: 'Success',
-    profile,
-  });
-});
-
-exports.updateProfile = catchAsync(async (req, res, next) => {
-  const filtered = filteredObject(req.body, 'name', 'bio');
-  const user = await RecipeUser.findByIdAndUpdate(req.user.id, filtered, {
-    new: true,
-    runValidators: true,
-  });
-  if (!user) {
-    return next(new AppError('User not found', 404));
-  }
-
-  statusResponseHandler(user, 200, res);
-});
-
 exports.forgotPassword = catchAsync(async (req, res, next) => {
   const user = await RecipeUser.findOne({ email: req.body.email });
 

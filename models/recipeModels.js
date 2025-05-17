@@ -56,7 +56,7 @@ recipeSchema.virtual('comment', {
   localField: '_id',
 });
 recipeSchema.pre(/^find/, function (next) {
-  this.populate({ path: 'user', select: 'name avatarUrl' });
+  this.populate({ path: 'user', select: 'name avatarUrl _id' });
   next();
 });
 

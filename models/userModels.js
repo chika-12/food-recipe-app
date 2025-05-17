@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const Recipe = require('./recipeModels');
+//const { followers } = require('../controllers/userControllers');
 require('./favouriteRecipe');
 
 const userSchema = mongoose.Schema(
@@ -39,6 +40,18 @@ const userSchema = mongoose.Schema(
         message: 'Password do not match',
       },
     },
+    followers: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: 'RecipeUser',
+      },
+    ],
+    following: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: 'RecipeUser',
+      },
+    ],
     avataUrl: {
       type: String,
     },
@@ -78,6 +91,14 @@ userSchema.pre(/^find/, function (next) {
   next();
 });
 
+// userSchema.pre(/^find/, function (next) {
+//   this.populate({ path: 'followers', select: 'name avataUrl' }).populate({
+//     path: 'following',
+//     select: 'name avataUrl',
+//   });
+//   next();
+// });
+
 userSchema.methods.passwordChanged = function (JWTTimestamp) {
   if (this.passwordChangedAt) {
     const changeTimeStamp = parseInt(
@@ -103,17 +124,11 @@ userSchema.methods.createPasswordToken = async function () {
   return resetToken;
 };
 
-// userSchema.virtual('favorite', {
-//   ref: 'FavoriteRecipe',
-//   foreignField: 'favoriteRecipe',
-//   localField: '_id',
-// });
-
 userSchema.virtual('favorite', {
   ref: 'FavoriteRecipe',
-  foreignField: 'user', // ← match the **user** field in fav‑schema
+  foreignField: 'user',
   localField: '_id',
-  justOne: false, // you’ll get an array of FavoriteRecipe docs
+  justOne: false,
 });
 
 const RecipeUser = mongoose.model('RecipeUser', userSchema);

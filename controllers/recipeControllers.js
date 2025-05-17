@@ -1,5 +1,6 @@
 const Recipe = require('../models/recipeModels');
 const factory = require('./factoryFunction');
+const User = require('../models/userModels');
 
 exports.getAllRecipe = factory.getall(Recipe);
 
@@ -21,4 +22,4 @@ exports.patchRecipe = factory.patchOne(Recipe);
 
 exports.deleteRecipe = factory.deleteOne(Recipe);
 
-exports.shareRecipe = factory.shareRecipe(Recipe);
+exports.shareRecipe = factory.shareRecipe(Recipe, User);

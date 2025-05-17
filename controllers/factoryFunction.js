@@ -2,6 +2,9 @@ const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 const ApiFeatures = require('../utils/feautures');
 const sendEmail = require('../utils/emailServices');
+const Recipe = require('../models/recipeModels');
+//const mongoose = require('mongoose');
+const { ObjectId } = require('mongodb');
 
 exports.getall = (model) =>
   catchAsync(async (req, res, next) => {
@@ -48,9 +51,8 @@ exports.createOne = (model) =>
 
 exports.getOneById = (model, popOptions) =>
   catchAsync(async (req, res, next) => {
-    let query = model.findById(req.params.recipeId);
-    if (popOptions)
-      query = model.findById(req.params.recipeId).populate(popOptions);
+    let query = model.findById(req.params.id);
+    if (popOptions) query = model.findById(req.params.id).populate(popOptions);
     const data = await query;
 
     if (!data) {
@@ -101,9 +103,9 @@ exports.specifiMeal = (model) =>
 
 exports.deleteOne = (model) =>
   catchAsync(async (req, res, next) => {
-    await model.findByIdAndDelete(req.params.recipeId);
+    await model.findByIdAndDelete(req.params.id);
 
-    if (model.findById(req.params.recipeId)) {
+    if (model.findById(req.params.id)) {
       return next(new AppError('Unable to delete data', 401));
     }
 
@@ -113,31 +115,93 @@ exports.deleteOne = (model) =>
     });
   });
 
-exports.shareRecipe = (model) =>
+exports.shareRecipe = (recipeModel, userModel) =>
   catchAsync(async (req, res, next) => {
-    const receiver = model.findById(req.params.recipeId);
+    const { receiverId } = req.body;
     const user = req.user;
-    const sharedRecipe = req.body.recipeId;
-
-    if (!sharedRecipeId) {
+    const sharedRecipeId = req.params.id;
+    const sharedRecipe = await recipeModel.findById(sharedRecipeId);
+    const receiver = await userModel.findById(receiverId);
+    if (!sharedRecipe) {
       return next(new AppError('Document not found', 404));
     }
-    if (user.id === receiver) {
+    if (!receiver) {
+      return next(new AppError('User does not exist'));
+    }
+    if (user.id === receiver.id) {
       return next(new AppError('You can not share to yourself', 403));
     }
-
     const showRecipe = `${req.protocol}://${req.get(
       'host'
-    )}/api/v1/recipe/${sharedRecipe}`;
-    const message = `${user.name} shared a recipe with you click on the link to check it out ${showRecipe}`;
-
-    sendEmail({
-      email: `from ${user.email} to  ${receiver}`,
+    )}/recipe-detail.html?id=${sharedRecipe._id}`;
+    const message = `${user.name} shared a recipe with you 🍲click on the link to check it out ${showRecipe}`;
+    await sendEmail({
+      email: `${receiver.email}`,
       subject: 'Love to check out this recipe',
       message,
     });
     res.status(200).json({
-      Status: 'Success',
-      message: 'Recipe Shared',
+      status: 'success',
+      message: `Recipe shared with ${receiver.email}`,
+    });
+  });
+
+exports.fetchUserRecipe = (model) =>
+  catchAsync(async (req, res, next) => {
+    const userId = req.params.id;
+    if (!userId) {
+      return next(new AppError('User Id required', 403));
+    }
+    const user = await model.findById(userId);
+    if (!user) {
+      return next(new AppError('Unidentified User', 404));
+    }
+    const recipe = await Recipe.findOne({
+      user: userId,
+    });
+    if (!recipe) {
+      return next(new AppError('This user has not posted any recipe', 404));
+    }
+
+    res.status(200).json({
+      status: 'success',
+      recipe,
+    });
+  });
+
+exports.followUser = (model) =>
+  catchAsync(async (req, res, next) => {
+    const currentUser = req.user;
+    const targetedUser = await model.findById(req.params.id);
+
+    if (!currentUser || !targetedUser) {
+      return next(new AppError('User not found', 404));
+    }
+    if (currentUser.id === targetedUser.id) {
+      return next(new AppError('You can not follow yourself', 403));
+    }
+
+    //follow
+    if (!currentUser.following.includes(targetedUser.id)) {
+      currentUser.following.push(targetedUser.id);
+      targetedUser.followers.push(currentUser.id);
+
+      await currentUser.save({ validateBeforeSave: false });
+      await targetedUser.save({ validateBeforeSave: false });
+    } else {
+      // Unfollow
+      currentUser.following.pull(targetedUser.id);
+      targetedUser.followers.pull(currentUser.id);
+      await currentUser.save({ validateBeforeSave: false });
+      await targetedUser.save({ validateBeforeSave: false });
+
+      return res.status(200).json({
+        status: 'success',
+        message: `You have unfollowed ${targetedUser.name}`,
+      });
+    }
+    res.status(200).json({
+      status: 'success',
+      message: `You are now following ${targetedUser.name}`,
     });
   });

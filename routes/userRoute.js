@@ -11,12 +11,12 @@ userRoute.post('/login', authenticate.login);
 //userRoute.use('/:userId/favourite', favouriteRoute);
 
 //geting user profile
-userRoute.get('/profile', authenticate.protect, authenticate.getUserProfile);
+userRoute.get('/profile', authenticate.protect, userControllers.getUserProfile);
 //update user profile
 userRoute.post(
   '/profileupdate',
   authenticate.protect,
-  authenticate.updateProfile
+  userControllers.updateProfile
 );
 
 //forgotpassword route
@@ -24,6 +24,14 @@ userRoute.post(
 userRoute.post('/forgotpassword', authenticate.forgotPassword);
 userRoute.post('/resetpassword/:token', authenticate.resetPassword);
 userRoute.delete('/deleteme', authenticate.protect, userControllers.deleteMe);
+
+userRoute.route('/:id/recipe').get(userControllers.fetchUserRecipe);
+
+//Follwing and unfollowing route
+
+userRoute
+  .route('/:id/follow')
+  .post(authenticate.protect, userControllers.followers);
 
 userRoute
   .route('/')
@@ -35,7 +43,7 @@ userRoute
   .post(userControllers.postUser);
 
 userRoute
-  .route('/:userId')
+  .route('/:id')
   .get(userControllers.getUserById)
   .patch(userControllers.patchUserById)
   .delete(userControllers.deleteUserById);
