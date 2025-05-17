@@ -26,6 +26,11 @@ userRoute.post('/forgotpassword', authenticate.forgotPassword);
 userRoute.post('/resetpassword/:token', authenticate.resetPassword);
 userRoute.delete('/deleteme', authenticate.protect, userControllers.deleteMe);
 
+//Get notification
+userRoute
+  .route('/notification')
+  .get(authenticate.protect, userControllers.getNotificationById);
+
 userRoute.route('/:id/recipe').get(userControllers.fetchUserRecipe);
 
 //Follwing and unfollowing route
@@ -49,9 +54,4 @@ userRoute
   .get(userControllers.getUserById)
   .patch(userControllers.patchUserById)
   .delete(userControllers.deleteUserById);
-
-//Get notification by user id
-userRoute
-  .route('/notification')
-  .get(authenticate.protect, userControllers.getNotificationById);
 module.exports = userRoute;
