@@ -6,7 +6,6 @@ const Recipe = require('../models/recipeModels');
 const NotificationClass = require('../utils/notification');
 const FavoriteRecipe = require('../models/favouriteRecipe');
 const Reviews = require('../models/reviewModels');
-const Recipe = require('../models/recipeModels');
 
 //function for sending notifications
 const sendNotification = async ({ recipient, sender, type, message, link }) => {
@@ -70,10 +69,10 @@ exports.createOne = (model) =>
 
     res.status(201).json({
       status: 'success',
-      message:
-        model === Reviews
-          ? 'Comment added and user notified'
-          : 'Data created successfully',
+      // message:
+      //   model === Reviews
+      //     ? 'Comment added and user notified'
+      //     : 'Data created successfully',
       data,
     });
   });
