@@ -5,6 +5,7 @@ const authenticate = require('../controllers/authenticateUser');
 
 const userRoute = express.Router();
 
+//sign up and login
 userRoute.post('/signup', authenticate.signUp);
 userRoute.post('/login', authenticate.login);
 
@@ -19,7 +20,7 @@ userRoute.post(
   userControllers.updateProfile
 );
 
-//forgotpassword route
+//forgotpassword route restpasswor delete route
 
 userRoute.post('/forgotpassword', authenticate.forgotPassword);
 userRoute.post('/resetpassword/:token', authenticate.resetPassword);
@@ -33,6 +34,7 @@ userRoute
   .route('/:id/follow')
   .post(authenticate.protect, userControllers.followers);
 
+// Get all users
 userRoute
   .route('/')
   .get(
@@ -40,11 +42,16 @@ userRoute
     authenticate.restrictTo('admin', 'dev'),
     userControllers.getallusers
   )
-  .post(userControllers.postUser);
+  .post(userControllers.postUser); // Unauthorised route
 
 userRoute
   .route('/:id')
   .get(userControllers.getUserById)
   .patch(userControllers.patchUserById)
   .delete(userControllers.deleteUserById);
+
+//Get notification by user id
+userRoute
+  .route('/notification')
+  .get(authenticate.protect, userControllers.getNotificationById);
 module.exports = userRoute;

@@ -238,3 +238,18 @@ exports.followUser = (model) =>
       message: `You are now following ${targetedUser.name}`,
     });
   });
+
+exports.getNotification = (model) =>
+  catchAsync(async (req, res, next) => {
+    const notifications = await model
+      .find({
+        recipient: req.user.id,
+      })
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      status: 'success',
+      results: notifications.length,
+      notifications,
+    });
+  });

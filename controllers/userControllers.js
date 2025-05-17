@@ -3,6 +3,7 @@ const catchAsync = require('../utils/catchAsync');
 const RecipeUser = require('../models/userModels');
 const factory = require('./factoryFunction');
 const { populate } = require('../models/recipeModels');
+const Notification = require('../models/notification');
 
 exports.postUser = catchAsync(async (req, res, next) => {
   res.status(503).json({
@@ -81,6 +82,8 @@ exports.getUserById = factory.getOneById(RecipeUser, [
     select: 'name avatarUrl',
   },
 ]);
+
+exports.getNotificationById = factory.getNotification(Notification);
 
 exports.fetchUserRecipe = factory.fetchUserRecipe(RecipeUser);
 
