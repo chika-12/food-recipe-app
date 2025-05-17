@@ -3,8 +3,7 @@ const catchAsync = require('../utils/catchAsync');
 const ApiFeatures = require('../utils/feautures');
 const sendEmail = require('../utils/emailServices');
 const Recipe = require('../models/recipeModels');
-//const mongoose = require('mongoose');
-const { ObjectId } = require('mongodb');
+const NotificationClass = require('../utils/notification');
 
 exports.getall = (model) =>
   catchAsync(async (req, res, next) => {
@@ -122,6 +121,10 @@ exports.shareRecipe = (recipeModel, userModel) =>
     const sharedRecipeId = req.params.id;
     const sharedRecipe = await recipeModel.findById(sharedRecipeId);
     const receiver = await userModel.findById(receiverId);
+
+    //id of recipe creator to send notification to
+    const sendNotificationTo = sharedRecipe.user;
+
     if (!sharedRecipe) {
       return next(new AppError('Document not found', 404));
     }
@@ -140,6 +143,26 @@ exports.shareRecipe = (recipeModel, userModel) =>
       subject: 'Love to check out this recipe',
       message,
     });
+
+    const notification = new NotificationClass(
+      sendNotificationTo,
+      user.id,
+      'share',
+      `${user.name} shared your recipe`,
+      `/users/${user.id}`
+    );
+    await notification.send();
+
+    // Notify the receiver they got a recipe (optional UX boost)
+    const notifyReceiver = new NotificationClass(
+      receiver.id,
+      user.id,
+      'recipe-share',
+      `${user.name} shared a recipe with you. Check your email to see it`,
+      `/recipe-detail.html?id=${sharedRecipe._id}`
+    );
+    await notifyReceiver.send();
+
     res.status(200).json({
       status: 'success',
       message: `Recipe shared with ${receiver.email}`,
@@ -200,6 +223,16 @@ exports.followUser = (model) =>
         message: `You have unfollowed ${targetedUser.name}`,
       });
     }
+
+    const notification = new NotificationClass(
+      targetedUser.id,
+      currentUser.id,
+      'follow',
+      `${currentUser.name} followed you`,
+      `/users/${currentUser.id}`
+    );
+    await notification.send();
+
     res.status(200).json({
       status: 'success',
       message: `You are now following ${targetedUser.name}`,
