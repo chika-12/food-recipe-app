@@ -12,7 +12,7 @@ reviewRoute
   )
   .post(authControllers.protect, reviewController.createReviews);
 reviewRoute
-  .route('/:reviewId')
+  .route('/:id')
   .delete(authControllers.protect, reviewController.deleteReview)
   .patch(authControllers.protect, reviewController.updateReviews);
 

@@ -4,7 +4,23 @@ const ApiFeatures = require('../utils/feautures');
 const sendEmail = require('../utils/emailServices');
 const Recipe = require('../models/recipeModels');
 const NotificationClass = require('../utils/notification');
+const FavoriteRecipe = require('../models/favouriteRecipe');
+const Reviews = require('../models/reviewModels');
+const Recipe = require('../models/recipeModels');
 
+//function for sending notifications
+const sendNotification = async ({ recipient, sender, type, message, link }) => {
+  const notification = new NotificationClass(
+    recipient,
+    sender,
+    type,
+    message,
+    link
+  );
+  await notification.send();
+};
+
+//Get all handler
 exports.getall = (model) =>
   catchAsync(async (req, res, next) => {
     let filter = {};
@@ -25,33 +41,48 @@ exports.getall = (model) =>
     });
   });
 
+//Create Handler
 exports.createOne = (model) =>
   catchAsync(async (req, res, next) => {
     req.body.user = req.user.id;
-    if (model === Reviews) {
-      if (!req.body.recipe) req.body.recipe = req.params.recipeId;
+    if (model === Reviews && !req.body.recipe) {
+      req.body.recipe = req.params.id;
     }
-
-    if (model === FavoriteRecipe) {
-      if (!req.body.favoriteRecipe)
-        req.body.favoriteRecipe = req.params.recipeId;
+    if (model === FavoriteRecipe && !req.body.favoriteRecipe) {
+      req.body.favoriteRecipe = req.params.id;
     }
     const data = await model.create(req.body);
-
     if (!data) {
       return next(new AppError('Data not posted', 400));
     }
+    if (model === Reviews) {
+      const targetRecipe = await Recipe.findById(req.body.recipe);
+      const targetedUserId = targetRecipe.user;
+
+      await sendNotification({
+        recipient: targetedUserId,
+        sender: req.user.id,
+        type: 'comment',
+        message: `${req.user.name} commented on your recipe`,
+        link: `/users/${req.user.id}`,
+      });
+    }
 
     res.status(201).json({
-      status: 'Success',
+      status: 'success',
+      message:
+        model === Reviews
+          ? 'Comment added and user notified'
+          : 'Data created successfully',
       data,
     });
   });
 
+//Get one by Id
 exports.getOneById = (model, popOptions) =>
   catchAsync(async (req, res, next) => {
     let query = model.findById(req.params.id);
-    if (popOptions) query = model.findById(req.params.id).populate(popOptions);
+    if (popOptions) query = query.populate(popOptions);
     const data = await query;
 
     if (!data) {
@@ -59,11 +90,12 @@ exports.getOneById = (model, popOptions) =>
     }
 
     res.status(200).json({
-      status: 'Sucess',
+      status: 'success',
       data,
     });
   });
 
+//Update............
 exports.patchOne = (model) =>
   catchAsync(async (req, res, next) => {
     const data = await model.findByIdAndUpdate(req.params.recipeId, req.body, {
@@ -76,11 +108,12 @@ exports.patchOne = (model) =>
     }
 
     res.status(200).json({
-      status: 'Success',
+      status: 'success',
       data,
     });
   });
 
+//Get specific meal
 exports.specifiMeal = (model) =>
   catchAsync(async (req, res, next) => {
     const { title } = req.query;
@@ -95,25 +128,27 @@ exports.specifiMeal = (model) =>
       return next(new AppError('No Data Found', 404));
     }
     res.status(200).json({
-      status: 'Success',
+      status: 'success',
       data,
     });
   });
 
+//Get data handler
 exports.deleteOne = (model) =>
   catchAsync(async (req, res, next) => {
-    await model.findByIdAndDelete(req.params.id);
+    const doc = await model.findByIdAndDelete(req.params.id);
 
-    if (model.findById(req.params.id)) {
-      return next(new AppError('Unable to delete data', 401));
+    if (!doc) {
+      return next(new AppError('Oops! we could not delete your data ', 401));
     }
 
     res.status(204).json({
-      status: 'Success',
+      status: 'success',
       data: null,
     });
   });
 
+//Share Recipe
 exports.shareRecipe = (recipeModel, userModel) =>
   catchAsync(async (req, res, next) => {
     const { receiverId } = req.body;
@@ -144,24 +179,24 @@ exports.shareRecipe = (recipeModel, userModel) =>
       message,
     });
 
-    const notification = new NotificationClass(
-      sendNotificationTo,
-      user.id,
-      'share',
-      `${user.name} shared your recipe`,
-      `/users/${user.id}`
-    );
-    await notification.send();
+    //notify the poster of the recipe
+
+    await sendNotification({
+      recipient: sendNotificationTo,
+      sender: user.id,
+      type: 'share',
+      message: `${user.name} shared your recipe`,
+      link: `/users/${user.id}`,
+    });
 
     // Notify the receiver they got a recipe (optional UX boost)
-    const notifyReceiver = new NotificationClass(
-      receiver.id,
-      user.id,
-      'recipe-share',
-      `${user.name} shared a recipe with you. Check your email to see it`,
-      `/recipe-detail.html?id=${sharedRecipe._id}`
-    );
-    await notifyReceiver.send();
+    await sendNotification({
+      recipient: receiver.id,
+      sender: user.id,
+      type: 'share',
+      message: `${user.name} shared a recipe with you. Check your email to see it`,
+      link: `/recipe-detail.html?id=${sharedRecipe._id}`,
+    });
 
     res.status(200).json({
       status: 'success',
@@ -169,6 +204,7 @@ exports.shareRecipe = (recipeModel, userModel) =>
     });
   });
 
+//Fetch specific user recipe
 exports.fetchUserRecipe = (model) =>
   catchAsync(async (req, res, next) => {
     const userId = req.params.id;
@@ -179,7 +215,7 @@ exports.fetchUserRecipe = (model) =>
     if (!user) {
       return next(new AppError('Unidentified User', 404));
     }
-    const recipe = await Recipe.findOne({
+    const recipe = await Recipe.find({
       user: userId,
     });
     if (!recipe) {
@@ -192,6 +228,7 @@ exports.fetchUserRecipe = (model) =>
     });
   });
 
+//Follow handler
 exports.followUser = (model) =>
   catchAsync(async (req, res, next) => {
     const currentUser = req.user;
@@ -218,27 +255,34 @@ exports.followUser = (model) =>
       await currentUser.save({ validateBeforeSave: false });
       await targetedUser.save({ validateBeforeSave: false });
 
+      await sendNotification({
+        recipient: targetedUser.id,
+        sender: currentUser.id,
+        type: 'unfollow',
+        message: `${currentUser.name} unfollowed you`,
+        link: `/users/${currentUser.id}`,
+      });
+
       return res.status(200).json({
         status: 'success',
         message: `You have unfollowed ${targetedUser.name}`,
       });
     }
 
-    const notification = new NotificationClass(
-      targetedUser.id,
-      currentUser.id,
-      'follow',
-      `${currentUser.name} followed you`,
-      `/users/${currentUser.id}`
-    );
-    await notification.send();
-
+    await sendNotification({
+      recipient: targetedUser.id,
+      sender: currentUser.id,
+      type: 'follow',
+      message: `${currentUser.name} followed you`,
+      link: `/users/${currentUser.id}`,
+    });
     res.status(200).json({
       status: 'success',
       message: `You are now following ${targetedUser.name}`,
     });
   });
 
+//Notification handler
 exports.getNotification = (model) =>
   catchAsync(async (req, res, next) => {
     const notifications = await model

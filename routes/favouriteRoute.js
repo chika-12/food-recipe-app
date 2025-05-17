@@ -12,7 +12,7 @@ favouriteRoute
   )
   .post(authenticate.protect, favouriteControllers.addToFavourite);
 favouriteRoute
-  .route('/:favoriteId')
+  .route('/:id')
   .delete(authenticate.protect, favouriteControllers.deleteFromFavorite);
 
 module.exports = favouriteRoute;
