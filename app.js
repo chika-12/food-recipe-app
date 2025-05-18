@@ -41,7 +41,7 @@ app.use(express.static(`${__dirname}/public`));
 
 // Rate limit
 const limit = rateLimit({
-  max: 100,
+  max: 10,
   windowsMs: 60 * 60 * 1000,
   message: 'Too many request from this Ip. Try again letter',
 });
