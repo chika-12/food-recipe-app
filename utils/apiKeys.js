@@ -5,8 +5,10 @@ module.exports = (req, res, next) => {
   const userKey = req.headers['x-api-key'];
 
   if (!userKey || userKey !== apiKey) {
-    res.status(405).json({
-      message: 'Forbiden. Invalid API key',
+    return res.status(401).json({
+      status: 'fail',
+      message:
+        'API key required to access this endpoint. Please contact the backend team to obtain a valid API key.',
     });
   }
   next();

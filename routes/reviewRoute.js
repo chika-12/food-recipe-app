@@ -7,7 +7,7 @@ reviewRoute
   .route('/')
   .get(
     authControllers.protect,
-    authControllers.restrictTo('admin'),
+    /*authControllers.restrictTo('admin'),*/
     reviewController.getAllReviews
   )
   .post(authControllers.protect, reviewController.createReviews);
