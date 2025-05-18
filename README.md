@@ -9,10 +9,14 @@ Detailed Recipe Information: Retrieve comprehensive details, including ingredien
 User Management: Support for user authentication and personalized recipe collections.
 Favorites and Ratings: Allow users to favorite recipes and provide ratings to share their feedback.
 
+
+Check out documentation for more infomation on how this API can used
+[documentation](https://documenter.getpostman.com/view/36965059/2sB2j4grGd)
+
 Requirement: API key required to access this endpoints. Please contact the backend team to obtain a valid API key.
 
-## Live Demo
+<!--## Live Demo-->
 
-Check out the live version of this project here:
+<!--Check out the live version of this project here:-->
 
-[🍽️ chika-food-api](https://chika-food-api.netlify.app)
+<!--[🍽️ chika-food-api](https://chika-food-api.netlify.app)-->
