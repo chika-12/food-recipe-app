@@ -12,6 +12,7 @@ const rateLimit = require('express-rate-limit');
 const { xss } = require('express-xss-sanitizer');
 const reviewRoute = require('./routes/reviewRoute');
 const favouriteRoute = require('./routes/favouriteRoute');
+const apiKeyAuthentication = require('./utils/apiKeys');
 
 //Http loging
 app.use(helmet());
@@ -48,6 +49,7 @@ const limit = rateLimit({
 app.use('/api', limit);
 
 //Routers
+app.use('/api', apiKeyAuthentication);
 app.use('/api/v1/recipes', recipeRoute);
 app.use('/api/v1/users', userRoute);
 app.use('/api/v1/review', reviewRoute);
