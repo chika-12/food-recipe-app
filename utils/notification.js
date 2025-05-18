@@ -12,7 +12,7 @@ class NotificationClass {
   }
 
   async send() {
-    if (this.recipient.toString() === this.sender.toString()) {
+    if (this.recipient === this.sender) {
       return new AppError('Unauthorised action', 403);
     }
     try {

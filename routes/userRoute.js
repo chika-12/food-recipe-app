@@ -44,7 +44,7 @@ userRoute
   .route('/')
   .get(
     authenticate.protect,
-    authenticate.restrictTo('admin', 'dev'),
+    /*authenticate.restrictTo('admin', 'dev'),*/
     userControllers.getallusers
   )
   .post(userControllers.postUser); // Unauthorised route

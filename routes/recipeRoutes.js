@@ -5,8 +5,8 @@ const authenticate = require('../controllers/authenticateUser');
 const reviewRoute = require('../routes/reviewRoute');
 const favouriteRoute = require('./favouriteRoute');
 
-recipeRoute.use('/:recipeId/favorite', favouriteRoute);
-recipeRoute.use('/:recipeId/review', reviewRoute);
+recipeRoute.use('/:id/favorite', favouriteRoute);
+recipeRoute.use('/:id/review', reviewRoute);
 
 recipeRoute
   .route('/search')

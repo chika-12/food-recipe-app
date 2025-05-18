@@ -55,7 +55,7 @@ exports.createOne = (model) =>
       return next(new AppError('Data not posted', 400));
     }
     if (model === Reviews) {
-      const targetRecipe = await Recipe.findById(req.body.recipe);
+      const targetRecipe = await Recipe.findById(req.params.id);
       const targetedUserId = targetRecipe.user;
 
       await sendNotification({
@@ -69,10 +69,10 @@ exports.createOne = (model) =>
 
     res.status(201).json({
       status: 'success',
-      // message:
-      //   model === Reviews
-      //     ? 'Comment added and user notified'
-      //     : 'Data created successfully',
+      message:
+        model === Reviews
+          ? 'Comment added and user notified'
+          : 'Data created successfully',
       data,
     });
   });
