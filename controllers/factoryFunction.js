@@ -6,7 +6,7 @@ const Recipe = require('../models/recipeModels');
 const NotificationClass = require('../utils/notification');
 const FavoriteRecipe = require('../models/favouriteRecipe');
 const Reviews = require('../models/reviewModels');
-
+const cache = require('../utils/cache');
 //function for sending notifications
 const sendNotification = async ({ recipient, sender, type, message, link }) => {
   const notification = new NotificationClass(
@@ -22,6 +22,18 @@ const sendNotification = async ({ recipient, sender, type, message, link }) => {
 //Get all handler
 exports.getall = (model) =>
   catchAsync(async (req, res, next) => {
+    const cacheKey = `${model.modelName}_all`;
+    const cachedData = cache.get(cacheKey);
+
+    if (cachedData) {
+      res.status(200).json({
+        status: 'success',
+        source: 'cache',
+        count: cachedData.length,
+        data: cachedData,
+      });
+    }
+
     let filter = {};
     if (req.params.recipeId) filter = { recipe: req.params.recipeId };
     const docs = new ApiFeatures(model.find(filter), req.query)
@@ -34,6 +46,12 @@ exports.getall = (model) =>
     if (!data) {
       return next(new AppError('Internal server error', 500));
     }
+
+    cache.set(
+      cacheKey,
+      data.map((item) => item.toObject())
+    );
+
     res.status(200).json({
       count: data.length,
       data,
@@ -80,6 +98,17 @@ exports.createOne = (model) =>
 //Get one by Id
 exports.getOneById = (model, popOptions) =>
   catchAsync(async (req, res, next) => {
+    const cacheKey = `${model.modelName}_all`;
+    const cacheData = cache.get(cacheKey);
+
+    if (cacheData) {
+      return res.status(200).json({
+        status: 'success',
+        source: 'cache',
+        data: cacheData,
+      });
+    }
+
     let query = model.findById(req.params.id);
     if (popOptions) query = query.populate(popOptions);
     const data = await query;
@@ -87,6 +116,8 @@ exports.getOneById = (model, popOptions) =>
     if (!data) {
       return next(new AppError('Data Not found', 404));
     }
+
+    cache.set(cacheKey, data.toObject());
 
     res.status(200).json({
       status: 'success',
